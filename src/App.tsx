@@ -40,12 +40,10 @@ const INDUSTRIES = [
 function Logo({ size = 28 }: { size?: number }) {
   return (
     <span
-      className="inline-flex items-center justify-center rounded-[10px] bg-gradient-to-br from-blue-500 via-teal-400 to-emerald-400 shadow-[0_0_30px_-8px_rgba(45,212,191,0.7)]"
+      className="inline-flex items-center justify-center rounded-[10px] border border-white/15 bg-neutral-900"
       style={{ width: size, height: size }}
     >
-      <span className="inline-flex items-center justify-center rounded-[8px] bg-neutral-950 w-[calc(100%-3px)] h-[calc(100%-3px)]">
-        <Cpu className="text-neutral-100" style={{ width: size * 0.5, height: size * 0.5 }} strokeWidth={1.8} />
-      </span>
+      <Cpu className="text-neutral-100" style={{ width: size * 0.5, height: size * 0.5 }} strokeWidth={1.8} />
     </span>
   );
 }
@@ -55,96 +53,135 @@ function GradientRule() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Hero graphic — animated clasp graph                                 */
+/* Hero graphic — calm static clasp schematic                          */
 /* ------------------------------------------------------------------ */
 
-const DEVICES = [
-  { label: 'OT-2 Liquid Handler', y: 74 },
-  { label: 'Niton XRF Analyzer', y: 146 },
-  { label: 'Matrice 350 RTK', y: 218 },
-  { label: 'Niton XL3t / CMM', y: 290 },
-  { label: 'USRP B210 SDR', y: 362 },
-];
-const APPS = [
-  { label: 'Benchling ELN', y: 74 },
-  { label: 'Corsearch Watch', y: 146 },
-  { label: 'Autoware Stack', y: 218 },
-  { label: 'InspectView NDT', y: 290 },
-  { label: 'GNU Radio', y: 362 },
+const CLASP_PAIRS = [
+  { device: 'OT-2 Liquid Handler', app: 'Benchling ELN', y: 66 },
+  { device: 'Matrice 350 RTK', app: 'Autoware Stack', y: 146 },
+  { device: 'USRP B210 SDR', app: 'GNU Radio', y: 226 },
 ];
 
 function ClaspGraph() {
   return (
-    <div className="relative w-full aspect-[520/460] select-none">
-      {/* ambient halos */}
-      <div className="absolute inset-[8%] rounded-full bg-teal-500/10 blur-[70px]" />
-      <div className="absolute left-[10%] top-[18%] h-40 w-40 rounded-full bg-blue-500/10 blur-[60px]" />
-      <svg viewBox="0 0 520 460" className="relative h-full w-full overflow-visible" fill="none">
-        <defs>
-          <linearGradient id="wire" x1="0" y1="0" x2="1" y2="0">
-            <stop stopColor="#60a5fa" stopOpacity="0.15" />
-            <stop offset="0.5" stopColor="#2dd4bf" stopOpacity="0.85" />
-            <stop offset="1" stopColor="#34d399" stopOpacity="0.15" />
-          </linearGradient>
-          <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
-            <stop stopColor="#3b82f6" /><stop offset="0.55" stopColor="#2dd4bf" /><stop offset="1" stopColor="#34d399" />
-          </linearGradient>
-          <radialGradient id="corefill"><stop stopColor="#134e4a" stopOpacity="0.9" /><stop offset="1" stopColor="#0b1220" stopOpacity="0.2" /></radialGradient>
-          <filter id="soft"><feGaussianBlur stdDeviation="6" /></filter>
-        </defs>
+    <div className="w-full rounded-2xl border border-white/[0.08] bg-[#09090b] p-6 sm:p-7 select-none">
+      <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5 font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
+        <span>Hardware</span>
+        <span className="text-zinc-400">Clasp Bridge</span>
+        <span>Software</span>
+      </div>
 
-        {/* concentric rings */}
-        {[66, 100, 136].map((r, i) => (
-          <circle key={r} cx="260" cy="226" r={r} stroke="white" strokeOpacity={0.07 - i * 0.015} strokeWidth="1" strokeDasharray={i === 2 ? '3 8' : undefined} />
-        ))}
-
-        {/* clasped wires */}
-        {DEVICES.map((d, i) => (
-          <g key={i}>
+      <svg viewBox="0 0 480 288" className="my-2 w-full" fill="none" aria-label="Hardware to software clasp schematic">
+        {/* Static orthogonal connectors */}
+        {CLASP_PAIRS.map((pair) => (
+          <g key={pair.device}>
             <path
-              d={`M 158 ${d.y} C 205 ${d.y}, 230 226, 260 226 C 290 226, 315 ${APPS[i].y}, 362 ${APPS[i].y}`}
-              stroke="url(#wire)"
-              strokeWidth="1.6"
+              d={`M 156 ${pair.y} H 204 V 146 H 214`}
+              stroke="white"
+              strokeOpacity="0.14"
+              strokeWidth="1"
             />
             <path
-              d={`M 158 ${d.y} C 205 ${d.y}, 230 226, 260 226 C 290 226, 315 ${APPS[i].y}, 362 ${APPS[i].y}`}
-              stroke="#5eead4"
-              strokeOpacity="0.9"
-              strokeWidth="2"
-              strokeDasharray="4 36"
-              className="animate-dash"
+              d={`M 266 146 H 276 V ${pair.y} H 324`}
+              stroke="white"
+              strokeOpacity="0.14"
+              strokeWidth="1"
             />
           </g>
         ))}
 
-        {/* device nodes */}
-        {DEVICES.map((d, i) => (
-          <g key={`dev-${i}`} className="animate-float-a" style={{ animationDelay: `${i * 0.4}s` }}>
-            <circle cx="152" cy={d.y} r="22" fill="#0b1220" stroke="#60a5fa" strokeOpacity="0.45" />
-            <circle cx="152" cy={d.y} r="4" fill="#60a5fa" />
-            <text x="120" y={d.y + 3} textAnchor="end" fill="#a1a1aa" fontSize="9.5" fontFamily="var(--font-mono)">{d.label}</text>
-          </g>
-        ))}
-        {/* app nodes */}
-        {APPS.map((a, i) => (
-          <g key={`app-${i}`} className="animate-float-b" style={{ animationDelay: `${i * 0.5}s` }}>
-            <circle cx="368" cy={a.y} r="22" fill="#0b1220" stroke="#34d399" strokeOpacity="0.45" />
-            <circle cx="368" cy={a.y} r="4" fill="#34d399" />
-            <text x="400" y={a.y + 3} textAnchor="start" fill="#a1a1aa" fontSize="9.5" fontFamily="var(--font-mono)">{a.label}</text>
+        {/* Device nodes (left) */}
+        {CLASP_PAIRS.map((pair) => (
+          <g key={`dev-${pair.device}`}>
+            <rect
+              x="8"
+              y={pair.y - 20}
+              width="148"
+              height="40"
+              rx="8"
+              fill="#0f0f12"
+              stroke="white"
+              strokeOpacity="0.1"
+            />
+            <circle cx="24" cy={pair.y} r="2.5" fill="#60a5fa" fillOpacity="0.85" />
+            <text
+              x="36"
+              y={pair.y + 3.5}
+              fill="#e4e4e7"
+              fontSize="10.5"
+              fontFamily="var(--font-mono)"
+            >
+              {pair.device}
+            </text>
           </g>
         ))}
 
-        {/* core */}
-        <circle cx="260" cy="226" r="48" fill="url(#soft)" opacity="0.55" />
-        <circle cx="260" cy="226" r="41" fill="url(#corefill)" stroke="url(#core)" strokeWidth="1.5" />
-        <circle cx="260" cy="226" r="52" stroke="#2dd4bf" strokeOpacity="0.4" className="animate-pulse-ring" />
-        <text x="260" y="222" textAnchor="middle" fill="#f4f4f5" fontSize="11" fontWeight="600" fontFamily="var(--font-display)">CLASP</text>
-        <text x="260" y="237" textAnchor="middle" fill="#5eead4" fontSize="8" fontFamily="var(--font-mono)">AGENTIC CORE</text>
+        {/* Central static bridge */}
+        <rect
+          x="214"
+          y="118"
+          width="52"
+          height="56"
+          rx="10"
+          fill="#111115"
+          stroke="white"
+          strokeOpacity="0.22"
+        />
+        <text
+          x="240"
+          y="143"
+          textAnchor="middle"
+          fill="#f4f4f5"
+          fontSize="10"
+          fontWeight="600"
+          letterSpacing="1"
+          fontFamily="var(--font-display)"
+        >
+          CLASP
+        </text>
+        <text
+          x="240"
+          y="158"
+          textAnchor="middle"
+          fill="#71717a"
+          fontSize="7.5"
+          letterSpacing="1.2"
+          fontFamily="var(--font-mono)"
+        >
+          CORE
+        </text>
 
-        {/* axis labels */}
-        <text x="152" y="410" textAnchor="middle" fill="#71717a" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)">HARDWARE</text>
-        <text x="368" y="410" textAnchor="middle" fill="#71717a" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)">SOFTWARE</text>
+        {/* Software nodes (right) */}
+        {CLASP_PAIRS.map((pair) => (
+          <g key={`app-${pair.app}`}>
+            <rect
+              x="324"
+              y={pair.y - 20}
+              width="148"
+              height="40"
+              rx="8"
+              fill="#0f0f12"
+              stroke="white"
+              strokeOpacity="0.1"
+            />
+            <circle cx="340" cy={pair.y} r="2.5" fill="#34d399" fillOpacity="0.85" />
+            <text
+              x="352"
+              y={pair.y + 3.5}
+              fill="#e4e4e7"
+              fontSize="10.5"
+              fontFamily="var(--font-mono)"
+            >
+              {pair.app}
+            </text>
+          </g>
+        ))}
       </svg>
+
+      <div className="flex items-center justify-between border-t border-white/[0.06] pt-3.5 font-mono text-[10px] text-zinc-500">
+        <span>Protocol bridge · Safety gates</span>
+        <span>Local-first execution</span>
+      </div>
     </div>
   );
 }
@@ -196,15 +233,14 @@ function Hero() {
   return (
     <section id="top" className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
       <div className="pointer-events-none absolute inset-0 grid-overlay" />
-      <div className="pointer-events-none absolute left-1/2 top-[-280px] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-teal-500/[0.07] blur-[120px]" />
+      <div className="pointer-events-none absolute left-1/2 top-[-280px] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white/[0.025] blur-[120px]" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-zinc-400">
-            <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" /></span>
+          <div className="mb-6 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
             Now shipping · v0.6.8
           </div>
           <h1 className="font-display text-5xl font-semibold leading-[1.03] tracking-tight sm:text-6xl lg:text-[68px]">
-            The operating system<br />for <span className="glow-text">agentic clusters.</span>
+            The operating system<br />for <span className="text-zinc-400">agentic clusters.</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
             ClaspOS pairs real hardware devices with the software that drives them — across
@@ -212,10 +248,8 @@ function Hero() {
             clusters to execute the work. Physical and digital, conjoined.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
-            <a href="#download" className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 p-[1.5px]">
-              <span className="inline-flex items-center gap-2 rounded-[10px] bg-neutral-950 px-5 py-3 text-sm font-semibold text-white transition-colors group-hover:bg-transparent">
-                Download ClaspOS <ArrowRight className="h-4 w-4" />
-              </span>
+            <a href="#download" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-neutral-950 transition-colors hover:bg-zinc-200">
+              Download ClaspOS <ArrowRight className="h-4 w-4" />
             </a>
             <a href="#platform" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-3 text-sm text-zinc-300 transition-colors hover:border-white/25 hover:text-white">
               Explore the platform <ChevronRight className="h-4 w-4" />
@@ -224,7 +258,6 @@ function Hero() {
           <p className="mt-6 font-mono text-[10px] text-zinc-600">macOS · Windows · Linux · Free to start</p>
         </div>
         <div className="relative">
-          <div className="absolute -inset-6 rounded-[40px] border border-white/[0.04] bg-gradient-to-b from-white/[0.02] to-transparent" />
           <ClaspGraph />
         </div>
       </div>
@@ -268,22 +301,21 @@ const CONCEPTS = [
 function ConceptArt({ kind }: { kind: string }) {
   if (kind === 'device') return (
     <svg viewBox="0 0 260 90" className="h-20 w-full" fill="none">
-      <rect x="10" y="20" width="74" height="50" rx="10" stroke="#60a5fa" strokeOpacity="0.5" />
-      <circle cx="47" cy="45" r="9" fill="#60a5fa" fillOpacity="0.15" stroke="#60a5fa" />
-      <path d="M84 45 H176" stroke="url(#wire)" strokeWidth="2" />
-      <path d="M84 45 H176" stroke="#5eead4" strokeWidth="2.5" strokeDasharray="4 30" className="animate-dash" />
-      <rect x="176" y="20" width="74" height="50" rx="10" stroke="#34d399" strokeOpacity="0.5" />
-      <rect x="190" y="38" width="46" height="4" rx="2" fill="#34d399" fillOpacity="0.5" />
-      <rect x="190" y="48" width="30" height="4" rx="2" fill="#34d399" fillOpacity="0.3" />
+      <rect x="10" y="20" width="74" height="50" rx="10" stroke="white" strokeOpacity="0.2" />
+      <circle cx="47" cy="45" r="9" fill="white" fillOpacity="0.04" stroke="#60a5fa" strokeOpacity="0.65" />
+      <path d="M84 45 H176" stroke="white" strokeOpacity="0.22" strokeWidth="1.5" />
+      <rect x="176" y="20" width="74" height="50" rx="10" stroke="white" strokeOpacity="0.2" />
+      <rect x="190" y="38" width="46" height="4" rx="2" fill="#34d399" fillOpacity="0.45" />
+      <rect x="190" y="48" width="30" height="4" rx="2" fill="white" fillOpacity="0.2" />
     </svg>
   );
   if (kind === 'chain') return (
     <svg viewBox="0 0 260 90" className="h-20 w-full" fill="none">
       {[20, 80, 140, 200].map((x, i) => (
         <g key={x}>
-          <rect x={x} y="30" width="40" height="30" rx="8" stroke="white" strokeOpacity="0.2" />
-          <circle cx={x + 20} cy="45" r="4" fill={i % 2 ? '#34d399' : '#60a5fa'} fillOpacity="0.8" />
-          {i < 3 && <path d={`M${x + 40} 45 H${x + 60}`} stroke="white" strokeOpacity="0.25" strokeDasharray="3 4" />}
+          <rect x={x} y="30" width="40" height="30" rx="8" stroke="white" strokeOpacity="0.18" />
+          <circle cx={x + 20} cy="45" r="3" fill={i === 3 ? '#34d399' : '#a1a1aa'} fillOpacity={i === 3 ? 0.8 : 0.6} />
+          {i < 3 && <path d={`M${x + 40} 45 H${x + 60}`} stroke="white" strokeOpacity="0.2" strokeDasharray="3 4" />}
         </g>
       ))}
     </svg>
@@ -293,10 +325,9 @@ function ConceptArt({ kind }: { kind: string }) {
       {[[130, 45], [70, 24], [70, 66], [190, 24], [190, 66], [130, 10], [130, 80]].map(([x, y], i) => (
         <g key={i}>
           <path d={`M130 45 L${x} ${y}`} stroke="white" strokeOpacity="0.13" />
-          <circle cx={x} cy={y} r={i === 0 ? 11 : 6} fill={i === 0 ? '#2dd4bf' : '#52525b'} fillOpacity={i === 0 ? 0.9 : 0.7} />
+          <circle cx={x} cy={y} r={i === 0 ? 10 : 5} fill={i === 0 ? '#e4e4e7' : '#52525b'} fillOpacity={i === 0 ? 0.9 : 0.7} />
         </g>
       ))}
-      <circle cx="130" cy="45" r="18" stroke="#2dd4bf" strokeOpacity="0.5" className="animate-pulse-ring" />
     </svg>
   );
 }
@@ -305,7 +336,7 @@ function Platform() {
   return (
     <section id="platform" className="relative mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
       <div className="max-w-2xl">
-        <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-teal-400/80">The platform</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">The platform</div>
         <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
           One system. Every device.<br /><span className="text-zinc-500">Every industry.</span>
         </h2>
@@ -320,8 +351,7 @@ function Platform() {
           const Icon = c.icon;
           return (
             <div key={c.title} className="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 transition-colors hover:border-white/20">
-              <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-teal-500/[0.07] blur-3xl transition-opacity group-hover:opacity-100 opacity-0" />
-              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-zinc-500"><Icon className="h-3.5 w-3.5 text-teal-400" /> {c.tag}</div>
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-zinc-500"><Icon className="h-3.5 w-3.5 text-zinc-400" /> {c.tag}</div>
               <h3 className="mt-4 font-display text-xl font-semibold">{c.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-zinc-400">{c.body}</p>
               <div className="mt-6"><ConceptArt kind={c.art} /></div>
@@ -345,19 +375,19 @@ function How() {
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-teal-400/80">How it works</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">How it works</div>
             <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">From discovery to delivery.</h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-zinc-400">Three moves. No prompt archaeology, no brittle scripts, no simulated results.</p>
         </div>
         <div className="relative mt-14 grid gap-8 md:grid-cols-3">
-          <div className="absolute left-0 right-0 top-9 hidden h-px bg-gradient-to-r from-blue-500/40 via-teal-400/40 to-emerald-400/40 md:block" />
+          <div className="absolute left-0 right-0 top-9 hidden h-px bg-white/[0.08] md:block" />
           {STEPS.map((s) => {
             const Icon = s.icon;
             return (
               <div key={s.n} className="relative">
                 <div className="relative z-10 inline-flex h-[72px] w-[72px] items-center justify-center rounded-2xl border border-white/10 bg-[#0a0a0c] shadow-xl">
-                  <Icon className="h-6 w-6 text-teal-300" strokeWidth={1.6} />
+                  <Icon className="h-6 w-6 text-zinc-200" strokeWidth={1.6} />
                   <span className="absolute -right-2 -top-2 font-mono text-[10px] text-zinc-500">{s.n}</span>
                 </div>
                 <h3 className="mt-6 font-display text-lg font-semibold">{s.title}</h3>
@@ -385,7 +415,7 @@ const USES = [
 function UseCases() {
   return (
     <section id="use-cases" className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
-      <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-teal-400/80">Use cases</div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">Use cases</div>
       <h2 className="mt-4 max-w-2xl font-display text-4xl font-semibold tracking-tight sm:text-5xl">Built for work that actually happens.</h2>
       <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {USES.map((u) => {
@@ -393,12 +423,12 @@ function UseCases() {
           return (
             <div key={u.title} className="group rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5 transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.04]">
               <div className="flex items-center justify-between">
-                <Icon className="h-5 w-5 text-teal-300" strokeWidth={1.6} />
+                <Icon className="h-5 w-5 text-zinc-300" strokeWidth={1.6} />
                 <span className="font-mono text-[9px] uppercase tracking-wider text-zinc-600">{u.tag}</span>
               </div>
               <h3 className="mt-5 font-display text-base font-semibold">{u.title}</h3>
               <p className="mt-2 text-xs leading-relaxed text-zinc-400">{u.body}</p>
-              <ArrowUpRight className="mt-4 h-3.5 w-3.5 text-zinc-600 transition-colors group-hover:text-teal-300" />
+              <ArrowUpRight className="mt-4 h-3.5 w-3.5 text-zinc-600 transition-colors group-hover:text-emerald-400" />
             </div>
           );
         })}
@@ -414,7 +444,7 @@ function Industries() {
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-teal-400/80">Coverage</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">Coverage</div>
             <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">67 industries, one substrate.</h2>
           </div>
           <a href="https://github.com/GlimmaryKarlR/ClaspOs-Releases" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs text-zinc-400 transition-colors hover:text-white">
@@ -447,9 +477,9 @@ const DOWNLOADS = [
 function Download() {
   return (
     <section id="download" className="relative overflow-hidden py-24 sm:py-32">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/[0.06] blur-[130px]" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.02] blur-[130px]" />
       <div className="relative mx-auto max-w-5xl px-5 text-center sm:px-8">
-        <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-teal-400/80">Get started</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">Get started</div>
         <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Clasp your first device today.</h2>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">Free to download and run locally. Your keys stay on your machine.</p>
         <div className="mt-12 grid gap-3 sm:grid-cols-2">
@@ -457,23 +487,23 @@ function Download() {
             const Icon = d.icon;
             return (
               <a key={d.file} href={d.file}
-                 className="group flex items-center justify-between gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 text-left transition-all hover:border-teal-400/40 hover:bg-white/[0.05]">
+                 className="group flex items-center justify-between gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 text-left transition-all hover:border-white/25 hover:bg-white/[0.05]">
                 <div className="flex items-center gap-4">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-neutral-950"><Icon className="h-4 w-4 text-teal-300" strokeWidth={1.6} /></span>
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-neutral-950"><Icon className="h-4 w-4 text-zinc-300" strokeWidth={1.6} /></span>
                   <span>
                     <span className="block font-display text-sm font-semibold">{d.label}</span>
                     <span className="mt-0.5 block font-mono text-[10px] text-zinc-500">{d.note}</span>
                   </span>
                 </div>
-                <DownloadIcon className="h-4 w-4 shrink-0 text-zinc-500 transition-colors group-hover:text-teal-300" />
+                <DownloadIcon className="h-4 w-4 shrink-0 text-zinc-500 transition-colors group-hover:text-emerald-400" />
               </a>
             );
           })}
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[10px] text-zinc-600">
-          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-emerald-400" /> Local-first</span>
-          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-emerald-400" /> No account required</span>
-          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-emerald-400" /> Real files, real protocols</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-emerald-400/80" /> Local-first</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-emerald-400/80" /> No account required</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-emerald-400/80" /> Real files, real protocols</span>
         </div>
       </div>
     </section>
