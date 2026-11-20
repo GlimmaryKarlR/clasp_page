@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+public/ClaspOs-*.dmg
+public/ClaspOs-*.exe
+public/ClaspOs-*.AppImage
