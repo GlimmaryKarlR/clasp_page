@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import {
   Cpu, Download as DownloadIcon, ArrowRight, ArrowUpRight, Github, Menu, X, Check,
-  Monitor, Command, AppWindow, CircleDot, Radar, Network, HeartPulse, Factory, TerminalSquare,
-  Scale, Plane, Braces, Database, Bot, ShieldCheck, Smartphone, ChevronRight,
-  Layers3, Sparkles, Building2, Clapperboard, Cog,
+  Monitor, Command, AppWindow, CircleDot, Radar, HeartPulse, TerminalSquare,
+  Scale, Plane, Braces, Database, ShieldCheck, Smartphone, ChevronRight,
+  Layers3, Sparkles, Cog, PenTool,
 } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
@@ -14,32 +14,30 @@ const NAV = [
   { label: 'Platform', href: '#platform' },
   { label: 'How it works', href: '#how' },
   { label: 'Use cases', href: '#use-cases' },
-  { label: 'Industries', href: '#industries' },
+  { label: 'Industry Atlas', href: '#industries' },
   { label: 'Releases', href: 'https://github.com/GlimmaryKarlR/ClaspOs-Releases' },
   { label: 'Download', href: '#download' },
 ];
 
+const ATLAS_URL = 'https://ai.studio/apps/a8b8518d-7767-45da-8635-02d61f58923a';
+
 const STATS = [
-  { value: '67', label: 'Industries preloaded', note: 'Domain workflows, standards, and terminology ready on day one.' },
-  { value: '1,340+', label: 'Apps & devices mapped', note: 'Native software integrations and local network protocols.' },
-  { value: '100%', label: 'Local-first & BYOC', note: 'Runs on your hardware or inside your private OIDC cloud.' },
-  { value: '10+', label: 'Model providers', note: 'Local open weights, custom endpoints, or frontier APIs.' },
+  { value: '67', label: 'Industries mapped', note: 'Domain rules, standards, and workflows preloaded.' },
+  { value: '1,340+', label: 'Clasped devices & apps', note: 'Software hooks and local hardware protocols.' },
+  { value: '42', label: 'Baseline hubs', note: 'Ready-to-run industry starter stacks.' },
+  { value: '10+', label: 'Model providers', note: 'Local open models or Bring Your Own Cloud.' },
 ];
 
 const INDUSTRIES = [
-  'Lawyers & Legal', 'Graphic Design', 'Architecture & BIM', 'Automotive & Industrial',
-  'Accounting & Finance', 'Marketing', 'Construction', 'Insurance',
-  'Mechanical & Structural Engineering', 'Healthcare', 'Video & Film Production',
-  'Game Development & 3D', 'Data Science & ML', 'Software Engineering & DevOps',
-  'Real Estate & Property', 'Human Resources', 'Financial Trading & Wealth',
-  'Logistics & Supply Chain', 'E-Commerce & Retail', 'Cybersecurity & IT',
-  'Pharmaceutical & Biotech R&D', 'Semiconductors', 'Defense Tech', 'AppSec',
-  'IP Protection', 'Inspection & NDT', 'Federal Compliance',
-  'Industrial Automation & Robotics', 'Aviation & Aerospace', 'Renewable Energy & Utilities',
-  'Mining & Resources', 'Agriculture & AgTech', 'Government & Public Sector',
-  'Interior Design', 'Music & Sound Engineering', 'Advertising & Media Buying',
-  'Non-Profit & Fundraising', 'Humanoid Systems', 'Space & Satellite', 'Wearables',
-  'XR & Spatial Computing', 'Smart Buildings',
+  'Lawyers & Legal', 'Graphic Design', 'Architecture / BIM', 'Automotive & Industrial',
+  'Accounting & Finance', 'Marketing', 'Construction', 'Insurance', 'Engineering',
+  'Healthcare', 'Video & Film', 'Game Development', 'Data Science', 'DevOps',
+  'Real Estate', 'Human Resources', 'Financial Trading', 'Logistics', 'E-Commerce',
+  'Cybersecurity', 'Pharmaceutical R&D', 'Semiconductors', 'Defense Tech', 'AppSec',
+  'IP Protection', 'Inspection & NDT', 'Federal Compliance', 'Robotics', 'Aviation',
+  'Renewable Energy', 'Mining', 'Agriculture', 'Government', 'Interior Design',
+  'Music Production', 'Advertising', 'Non-Profit', 'Humanoid Systems', 'Space & Satellite',
+  'AI Assistants', 'Wearables', 'XR / Spatial', 'Maritime', 'Rail', 'Smart Buildings',
 ];
 
 function Logo({ size = 28 }: { size?: number }) {
@@ -54,78 +52,157 @@ function Logo({ size = 28 }: { size?: number }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Hero graphic — lightweight orthogonal clasp schematic              */
+/* Hero graphic — compact, static circular chord diagram               */
 /* ------------------------------------------------------------------ */
 
-const CLASP_PAIRS = [
-  { device: 'OT-2 Liquid Handler', app: 'Benchling ELN', y: 66 },
-  { device: 'Matrice 350 RTK', app: 'Autoware Stack', y: 146 },
-  { device: 'USRP B210 SDR', app: 'GNU Radio', y: 226 },
+const ATLAS_SECTORS = [
+  { name: 'Legal & Gov', color: '#A78BFA' },
+  { name: 'Design & Media', color: '#FBBF24' },
+  { name: 'Engineering', color: '#F87171' },
+  { name: 'Data & DevOps', color: '#60A5FA' },
+  { name: 'Health & Biotech', color: '#2DD4BF' },
+  { name: 'Finance & Ops', color: '#34D399' },
+  { name: 'Energy & Robotics', color: '#CBD5E1' },
 ];
 
-function ClaspGraph() {
+const SEG_PER_SECTOR = 8;
+const SEG_COUNT = ATLAS_SECTORS.length * SEG_PER_SECTOR;
+const CCX = 240;
+const CCY = 240;
+const R_OUT = 148;
+const R_IN = 136;
+const R_ATTACH = 134;
+
+function polar(r: number, a: number) {
+  return { x: CCX + r * Math.sin(a), y: CCY - r * Math.cos(a) };
+}
+
+function segAngle(i: number) {
+  return ((i + 0.5) / SEG_COUNT) * Math.PI * 2;
+}
+
+function ringSlice(i: number) {
+  const step = (Math.PI * 2) / SEG_COUNT;
+  const gap = step * 0.18;
+  const a0 = i * step + gap / 2;
+  const a1 = (i + 1) * step - gap / 2;
+  const p0 = polar(R_OUT, a0), p1 = polar(R_OUT, a1);
+  const p2 = polar(R_IN, a1), p3 = polar(R_IN, a0);
+  return `M ${p0.x.toFixed(2)} ${p0.y.toFixed(2)} A ${R_OUT} ${R_OUT} 0 0 1 ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} L ${p2.x.toFixed(2)} ${p2.y.toFixed(2)} A ${R_IN} ${R_IN} 0 0 0 ${p3.x.toFixed(2)} ${p3.y.toFixed(2)} Z`;
+}
+
+function chordPath(i: number, j: number) {
+  const a = segAngle(i), b = segAngle(j);
+  const p1 = polar(R_ATTACH, a), p2 = polar(R_ATTACH, b);
+  const q1 = polar(R_ATTACH * 0.26, a), q2 = polar(R_ATTACH * 0.26, b);
+  return `M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} C ${q1.x.toFixed(1)} ${q1.y.toFixed(1)}, ${q2.x.toFixed(1)} ${q2.y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+}
+
+const CHORDS: { i: number; j: number; color: string; opacity: number; width: number }[] = (() => {
+  let seed = 8675309;
+  const rnd = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  const out: { i: number; j: number; color: string; opacity: number; width: number }[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < SEG_COUNT; i++) {
+    for (let k = 0; k < 3; k++) {
+      const j = Math.floor(rnd() * SEG_COUNT);
+      if (j === i) continue;
+      const key = i < j ? `${i}:${j}` : `${j}:${i}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const sector = Math.floor(i / SEG_PER_SECTOR);
+      const sameSector = sector === Math.floor(j / SEG_PER_SECTOR);
+      const r = rnd();
+      out.push({
+        i, j,
+        color: ATLAS_SECTORS[sector].color,
+        opacity: sameSector ? 0.26 + r * 0.34 : 0.10 + r * 0.20,
+        width: sameSector ? 1 : 0.7,
+      });
+    }
+  }
+  return out;
+})();
+
+const SECTOR_TICKS = ATLAS_SECTORS.map((_, s) => {
+  const a = ((s * SEG_PER_SECTOR) / SEG_COUNT) * Math.PI * 2;
+  const p1 = polar(R_OUT + 1, a), p2 = polar(R_OUT + 8, a);
+  return `M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} L ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+});
+
+const SECTOR_LABELS = ATLAS_SECTORS.map((sector, idx) => {
+  const a = segAngle(idx * SEG_PER_SECTOR + (SEG_PER_SECTOR - 1) / 2);
+  const p = polar(R_OUT + 14, a);
+  const anchor = p.x > CCX + 8 ? 'start' : p.x < CCX - 8 ? 'end' : 'middle';
+  return { ...sector, x: p.x, y: p.y + 3, anchor: anchor as 'start' | 'end' | 'middle' };
+});
+
+function ChordAtlas() {
   return (
-    <div className="w-full rounded-2xl border border-white/[0.08] bg-[#09090b] p-6 sm:p-7 select-none">
-      <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5 font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-        <span>Hardware</span>
-        <span className="text-zinc-400">Clasp Bridge</span>
-        <span>Software</span>
+    <div className="w-full select-none rounded-2xl border border-white/[0.08] bg-[#09090b] p-5 sm:p-6">
+      <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        <span>The Industry Atlas</span>
+        <span className="text-zinc-400">67 domains · 1,340+ clasps</span>
       </div>
 
-      <svg viewBox="0 0 480 288" className="my-2 w-full" fill="none" aria-label="Hardware to software clasp schematic">
-        <defs>
-          <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
-            <circle cx="1" cy="1" r="0.6" fill="white" fillOpacity="0.07" />
-          </pattern>
-        </defs>
-        <rect x="0" y="0" width="480" height="288" fill="url(#dots)" />
+      <svg viewBox="0 0 480 480" className="mx-auto my-3 w-full max-w-[380px]" fill="none" aria-label="Circular chord diagram of 67 industries mapped in the Clasp Atlas">
+        {/* faint guide rings */}
+        <circle cx={CCX} cy={CCY} r={R_OUT + 10} stroke="white" strokeOpacity="0.045" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <circle cx={CCX} cy={CCY} r={R_IN - 12} stroke="white" strokeOpacity="0.035" strokeWidth="1" strokeDasharray="2 6" vectorEffect="non-scaling-stroke" />
 
-        {/* corner registration marks */}
-        {[[8, 8], [472, 8], [8, 280], [472, 280]].map(([x, y], i) => (
-          <g key={i} stroke="white" strokeOpacity="0.22" strokeWidth="1" vectorEffect="non-scaling-stroke">
-            <path d={`M${x - 4} ${y} H${x + 4} M${x} ${y - 4} V${y + 4}`} />
-          </g>
-        ))}
+        {/* chords */}
+        <g>
+          {CHORDS.map((c, i) => (
+            <path
+              key={i}
+              d={chordPath(c.i, c.j)}
+              stroke={c.color}
+              strokeOpacity={c.opacity}
+              strokeWidth={c.width}
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+        </g>
 
-        {/* orthogonal connectors */}
-        {CLASP_PAIRS.map((pair) => (
-          <g key={pair.device}>
-            <path d={`M 156 ${pair.y} H 204 V 146 H 214`} stroke="white" strokeOpacity="0.16" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-            <path d={`M 266 146 H 276 V ${pair.y} H 324`} stroke="white" strokeOpacity="0.16" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-            <circle cx="204" cy={pair.y} r="1.6" fill="white" fillOpacity="0.3" />
-            <circle cx="276" cy={pair.y} r="1.6" fill="white" fillOpacity="0.3" />
-          </g>
-        ))}
+        {/* industry ring segments */}
+        <g>
+          {Array.from({ length: SEG_COUNT }, (_, i) => (
+            <path
+              key={i}
+              d={ringSlice(i)}
+              fill={ATLAS_SECTORS[Math.floor(i / SEG_PER_SECTOR)].color}
+              fillOpacity={i % 3 === 0 ? 0.92 : 0.7}
+            />
+          ))}
+        </g>
 
-        {/* device nodes */}
-        {CLASP_PAIRS.map((pair, i) => (
-          <g key={`dev-${pair.device}`}>
-            <rect x="8" y={pair.y - 20} width="148" height="40" rx="7" fill="#0f0f12" stroke="white" strokeOpacity="0.12" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-            <circle cx="24" cy={pair.y} r="2.5" fill="#93c5fd" fillOpacity="0.9" />
-            <text x="36" y={pair.y + 3.5} fill="#e4e4e7" fontSize="10.5" fontFamily="var(--font-mono)">{pair.device}</text>
-            <text x="148" y={pair.y + 3.5} textAnchor="end" fill="#52525b" fontSize="8" fontFamily="var(--font-mono)">0{i + 1}</text>
-          </g>
-        ))}
+        {/* sector boundary ticks */}
+        <g stroke="white" strokeOpacity="0.22" strokeWidth="1" vectorEffect="non-scaling-stroke">
+          {SECTOR_TICKS.map((d, i) => <path key={i} d={d} />)}
+        </g>
 
-        {/* central bridge */}
-        <rect x="214" y="118" width="52" height="56" rx="9" fill="#111115" stroke="white" strokeOpacity="0.28" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        <text x="240" y="143" textAnchor="middle" fill="#f4f4f5" fontSize="10" fontWeight="600" letterSpacing="1" fontFamily="var(--font-display)">CLASP</text>
-        <text x="240" y="158" textAnchor="middle" fill="#71717a" fontSize="7.5" letterSpacing="1.2" fontFamily="var(--font-mono)">CORE</text>
+        {/* sector labels */}
+        <g fontFamily="var(--font-mono)" fontSize="8.5" letterSpacing="0.5">
+          {SECTOR_LABELS.map((s) => (
+            <text key={s.name} x={s.x} y={s.y} textAnchor={s.anchor} fill={s.color} fillOpacity="0.9">
+              {s.name}
+            </text>
+          ))}
+        </g>
 
-        {/* software nodes */}
-        {CLASP_PAIRS.map((pair, i) => (
-          <g key={`app-${pair.app}`}>
-            <rect x="324" y={pair.y - 20} width="148" height="40" rx="7" fill="#0f0f12" stroke="white" strokeOpacity="0.12" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-            <circle cx="340" cy={pair.y} r="2.5" fill="#6ee7b7" fillOpacity="0.9" />
-            <text x="352" y={pair.y + 3.5} fill="#e4e4e7" fontSize="10.5" fontFamily="var(--font-mono)">{pair.app}</text>
-            <text x="464" y={pair.y + 3.5} textAnchor="end" fill="#52525b" fontSize="8" fontFamily="var(--font-mono)">0{i + 1}</text>
-          </g>
-        ))}
+        {/* centre hub */}
+        <circle cx={CCX} cy={CCY} r="31" fill="#09090b" stroke="white" strokeOpacity="0.14" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <circle cx={CCX} cy={CCY} r="36" stroke="white" strokeOpacity="0.05" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <text x={CCX} y={CCY + 3} textAnchor="middle" fill="#f4f4f5" fontSize="20" fontWeight="600" fontFamily="var(--font-display)">67</text>
+        <text x={CCX} y={CCY + 17} textAnchor="middle" fill="#71717a" fontSize="7" letterSpacing="1.4" fontFamily="var(--font-mono)">INDUSTRIES</text>
       </svg>
 
-      <div className="flex items-center justify-between border-t border-white/[0.06] pt-3.5 font-mono text-[10px] text-zinc-500">
-        <span>Protocol bridge · Safety gates</span>
-        <span>Local-first execution</span>
+      <div className="flex items-center justify-between border-t border-white/[0.06] pt-3 font-mono text-[10px] text-zinc-500">
+        <span>Circos map · Local-first</span>
+        <span>One mind, 67 domains</span>
       </div>
     </div>
   );
@@ -179,31 +256,30 @@ function Hero() {
   return (
     <section id="top" className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
       <div className="pointer-events-none absolute inset-0 grid-overlay" />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
           <div className="mb-6 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
             <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" /> Now shipping · v0.6.8
           </div>
-          <h1 className="font-display text-5xl font-semibold leading-[1.03] tracking-tight sm:text-6xl lg:text-[68px]">
-            Every tool. Every machine.<br /><span className="text-zinc-400">One mind.</span>
+          <h1 className="font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-[66px]">
+            AI should do the busy work.<br /><span className="text-zinc-400">You should think.</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-            ClaspOS is a local-first agentic operating layer that connects custom and frontier AI
-            models directly to your desktop software, local hardware, and mobile devices — preloaded
-            with domain intelligence across <span className="text-zinc-200">67 industries</span> so
-            your team produces real deliverables, not just chat text.
+            Control your desktop software, shop floor, lab, or office network from one local-first
+            workspace—and run it all from your phone without ever leaking proprietary data to
+            frontier labs.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <a href="#download" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-neutral-950 transition-colors hover:bg-zinc-200">
               Download ClaspOS <ArrowRight className="h-4 w-4" />
             </a>
-            <a href="#platform" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-3 text-sm text-zinc-300 transition-colors hover:border-white/25 hover:text-white">
-              Explore the platform <ChevronRight className="h-4 w-4" />
+            <a href="#industries" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-3 text-sm text-zinc-300 transition-colors hover:border-white/25 hover:text-white">
+              Explore the Atlas <ChevronRight className="h-4 w-4" />
             </a>
           </div>
-          <p className="mt-6 font-mono text-[10px] text-zinc-600">macOS · Windows · Linux · Free to start (15 runs included, no credit card)</p>
+          <p className="mt-6 font-mono text-[10px] text-zinc-600">macOS · Windows · Linux · Clasp Mobile · Free to start</p>
         </div>
-        <div className="relative"><ClaspGraph /></div>
+        <div className="relative flex justify-center"><ChordAtlas /></div>
       </div>
     </section>
   );
@@ -227,19 +303,19 @@ function Stats() {
 
 const CONCEPTS = [
   {
-    icon: CircleDot, tag: '01 / CLASP', title: 'Connect your software & hardware',
-    body: 'Link AI directly to the tools you already rely on — from CAD, IDEs, and DAWs to CNC mills, lab instruments, and local network devices. No brittle glue scripts or manual API plumbing.',
+    icon: CircleDot, tag: '01 / CLASP', title: 'Prompt @devices and apps directly in chat',
+    body: 'Real-time subnet discovery finds hardware on your local network and software already on your machine. Tag @device or @app right inside the conversation—ClaspOS speaks each manufacturer’s native protocol and executes the work.',
     art: 'device',
   },
   {
-    icon: Layers3, tag: '02 / CLUSTER', title: 'Assemble the right team automatically',
-    body: 'Preloaded with intelligence across 67 professions. Start a task in Marketing or Engineering, and ClaspOS automatically recruits neighboring specialists — like Graphic Design, Legal, or Simulation — to review and contribute.',
+    icon: Layers3, tag: '02 / CLUSTER', title: 'Put AI, hardware, and humans in the same prompt',
+    body: 'Initiate Clasp in one click. ClaspOS collects your tools, industry rules, and neighboring domain specialists into a single team—automating the busy work behind human approval gates while writing verified files straight to disk.',
     art: 'cluster',
   },
   {
-    icon: Sparkles, tag: '03 / EXECUTE', title: 'Deliver verified files, anywhere',
-    body: 'Agents plan, critique, and write production files to real project folders behind configurable human approval gates. Trigger and monitor runs remotely from your phone using Clasp Mobile.',
-    art: 'execute',
+    icon: Smartphone, tag: '03 / MOBILE', title: 'Control the entire stack from your phone',
+    body: 'Pair Clasp Mobile to your desktop workstation in seconds with zero cloud storage. Trigger runs remotely, check on your shop floor or cluster from anywhere, and communicate over post-quantum encrypted links.',
+    art: 'mobile',
   },
 ];
 
@@ -265,6 +341,17 @@ function ConceptArt({ kind }: { kind: string }) {
       ))}
     </svg>
   );
+  if (kind === 'mobile') return (
+    <svg viewBox="0 0 260 90" className="h-20 w-full" fill="none">
+      <rect x="104" y="6" width="52" height="78" rx="9" {...crisp} />
+      <path d="M118 14 H142" stroke="white" strokeOpacity="0.25" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      <circle cx="130" cy="70" r="2.5" fill="#6ee7b7" fillOpacity="0.9" />
+      <path d="M104 40 H52 M52 40 V22 M156 56 H208 V38" stroke="white" strokeOpacity="0.2" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      <rect x="20" y="8" width="32" height="28" rx="4" {...crisp} />
+      <rect x="208" y="10" width="32" height="28" rx="4" {...crisp} />
+      <path d="M24 18 H44 M24 25 H38" stroke="white" strokeOpacity="0.16" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+    </svg>
+  );
   return (
     <svg viewBox="0 0 260 90" className="h-20 w-full" fill="none">
       {[20, 80, 140, 200].map((x, i) => (
@@ -274,7 +361,6 @@ function ConceptArt({ kind }: { kind: string }) {
           {i < 3 && <path d={`M${x + 40} 45 H${x + 60}`} stroke="white" strokeOpacity="0.22" strokeWidth="1" strokeDasharray="3 4" vectorEffect="non-scaling-stroke" />}
         </g>
       ))}
-      <path d="M206 77 H240 M240 77 V68" stroke="#6ee7b7" strokeOpacity="0.6" strokeWidth="1" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
@@ -285,13 +371,13 @@ function Platform() {
       <div className="max-w-3xl">
         <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">The platform</div>
         <h2 className="mt-4 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-          Stop copy-pasting between AI chat<br />and your actual tools.
+          One mind across your software,<br />hardware, and phone.
         </h2>
         <p className="mt-5 text-base leading-relaxed text-zinc-400">
-          ClaspOS is not another browser chat wrapper. It is a workstation operating layer that knows
-          what applications are installed on your computer, what hardware is connected to your local
-          network, and how to coordinate specialized AI agents to execute multi-step work — writing
-          verified files directly to your disk.
+          In Asimov’s Foundation, the clasp was the state of two or more robots sharing one mind.
+          ClaspOS brings that to your workstation—gathering your existing software, local Wi-Fi
+          hardware, and AI models into one place so you never waste time copy-pasting or letting
+          AI dictate how you work.
         </p>
       </div>
       <div className="mt-14 grid gap-4 md:grid-cols-3">
@@ -312,9 +398,9 @@ function Platform() {
 }
 
 const STEPS = [
-  { n: '01', title: 'Scan your environment', body: 'ClaspOS automatically detects installed desktop applications and LAN-connected devices, building a live map of what your workstation can control.', icon: Radar },
-  { n: '02', title: 'Set your guardrails & cloud', body: 'Use local open-weight models, frontier APIs, or Bring Your Own Cloud (BYOC) secured with your organization’s OIDC/SSO. Choose which actions run autonomously and which require your sign-off.', icon: ShieldCheck },
-  { n: '03', title: 'Dispatch a mission', body: 'Describe the outcome you need from your desktop or mobile app. A coordinated agent team executes across your tools, audits the output, and saves finished artifacts to disk.', icon: Sparkles },
+  { n: '01', title: 'Auto-discover your local network', body: 'ClaspOS scans your workstation and local Wi-Fi to map installed applications, IPs, and connected hardware automatically—no manual setup.', icon: Radar },
+  { n: '02', title: 'Keep your data internal (BYOC)', body: 'Use local open-weight models or Bring Your Own Cloud (Mistral, Azure OpenAI, NVIDIA, Gemini, and more). Use any model you want without a third party “borrowing” your proprietary data.', icon: ShieldCheck },
+  { n: '03', title: 'Initiate Clasp and dispatch', body: 'Describe the outcome on desktop or mobile. Your agents coordinate across tools, audit the output, and save real files directly to your project folders.', icon: Sparkles },
 ];
 
 function How() {
@@ -324,9 +410,9 @@ function How() {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">How it works</div>
-            <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">From local setup to<br />finished deliverables.</h2>
+            <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">One button.<br />No busy work.</h2>
           </div>
-          <p className="max-w-sm text-sm leading-relaxed text-zinc-400">Three steps. Zero prompt archaeology, zero cloud lock-in, zero simulated outputs.</p>
+          <p className="max-w-sm text-sm leading-relaxed text-zinc-400">Three steps from local scan to finished deliverables—with your IP kept strictly internal.</p>
         </div>
         <div className="relative mt-14 grid gap-8 md:grid-cols-3">
           <div className="absolute left-0 right-0 top-9 hidden h-px bg-white/[0.08] md:block" />
@@ -350,21 +436,19 @@ function How() {
 }
 
 const USES = [
-  { icon: Cog, title: 'Engineering & Manufacturing', sub: 'CAD, CAM, CNC & Simulation', body: 'Generate parameterized parts, toolpaths, and stress reports across Fusion 360, SolidWorks, and MTConnect or OPC UA shop-floor machines.' },
-  { icon: Braces, title: 'Software & DevOps', sub: 'IDEs, Repos & Infrastructure', body: 'Refactor codebases, automate CI/CD pipelines, and audit local containers with full repository context and diff-level approval gates.' },
-  { icon: Scale, title: 'Legal & Compliance', sub: 'Contracts, eDiscovery & Audit', body: 'Redline agreements, run privilege reviews, and assemble SOC 2 or ISO evidence packages without sensitive client documents ever leaving your disk.' },
-  { icon: HeartPulse, title: 'Healthcare & Biotech R&D', sub: 'Lab Instruments & Clinical Ops', body: 'Bridge liquid handlers, sequencers, and plate readers with ELNs and analysis pipelines in validated, air-gapped environments.' },
-  { icon: Building2, title: 'Architecture & Construction', sub: 'BIM, Drafting & Field Capture', body: 'Automate Revit schedules, structural checks, and laser-scanner workflows from workstation to jobsite via mobile.' },
-  { icon: Clapperboard, title: 'Creative, Audio & Film', sub: 'Design, Post-Production & DAWs', body: 'Coordinate vector assets, timeline edits, color grading, and spatial audio sessions across Adobe, DaVinci Resolve, and Pro Tools.' },
-  { icon: Plane, title: 'Aerospace & Industrial', sub: 'Avionics, Robotics & Field Service', body: 'Pair PLCs, inspection rigs, and telemetry logs with compliance documentation and maintenance runbooks.' },
-  { icon: Database, title: 'Data & Enterprise AI', sub: 'Pipelines, BI & Private BYOC', body: 'Orchestrate private custom models alongside data warehouses and vendor copilots under unified OIDC/SSO governance.' },
+  { icon: Cog, title: 'Manufacturing & Robotics', sub: 'Shop Floor & CNC', body: 'Run an entire shop floor from your phone on-prem. ClaspOS translates one workflow across FANUC, ABB, KUKA, Haas, and 3D printers without leaking part files.' },
+  { icon: PenTool, title: 'Engineering & Design', sub: 'CAD, BIM & Creative Suites', body: 'Connect Fusion 360, Revit, and Adobe InDesign, Illustrator, and Photoshop directly to your local agents for production-grade deliverables.' },
+  { icon: HeartPulse, title: 'Healthcare & Biotech', sub: 'Labs & Instruments', body: 'Bridge liquid handlers, sequencers, and plate readers with electronic lab notebooks in validated, air-gapped environments.' },
+  { icon: Scale, title: 'Legal & Compliance', sub: 'Vaults & Audits', body: 'Run contract review, eDiscovery, and SOC 1/2, DFARS, NIST, and ANSI evidence workflows without sensitive client files leaving your machine.' },
+  { icon: Database, title: 'Software & Data', sub: 'Repos, GPUs & Pipelines', body: 'Orchestrate local IDEs, containers, GPU nodes, and data pipelines with diff-level approval gates and zero cloud lock-in.' },
+  { icon: Plane, title: 'Aviation, Energy & Field Ops', sub: 'Remote & Off-Grid', body: 'Coordinate avionics benches, grid telemetry, and field inspections—even over encrypted SMS when cellular data drops.' },
 ];
 
 function UseCases() {
   return (
     <section id="use-cases" className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
       <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">Use cases</div>
-      <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Built for work that leaves<br />the chat window.</h2>
+      <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Built for your house, lab,<br />office, or shop floor.</h2>
       <div className="mt-12 grid gap-3 md:grid-cols-2">
         {USES.map((u) => {
           const Icon = u.icon;
@@ -393,13 +477,16 @@ function Industries() {
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">Coverage</div>
-            <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">67 industries,<br />one operating layer.</h2>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">Every industry pod ships with domain standards, file formats, software hooks, and hardware protocols out of the box.</p>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">The Industry Atlas</div>
+            <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">67 industries,<br />mapped in one Atlas.</h2>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">
+              Never retrain a team from scratch on new software or hardware. Every industry stack ships
+              with preloaded domain intelligence, protocols, and tool hooks out of the box.{' '}
+              <a href={ATLAS_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-zinc-200 underline decoration-zinc-600 underline-offset-2 transition-colors hover:text-white">
+                Browse the full 67-industry Atlas <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
+            </p>
           </div>
-          <a href="https://github.com/GlimmaryKarlR/ClaspOs-Releases" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs text-zinc-400 transition-colors hover:text-white">
-            See the full 67-industry catalog <ArrowUpRight className="h-3.5 w-3.5" />
-          </a>
         </div>
       </div>
       <div className="relative mt-12 flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
@@ -410,7 +497,7 @@ function Industries() {
         </div>
       </div>
       <div className="mx-auto mt-10 max-w-7xl px-5 sm:px-8">
-        <p className="max-w-4xl font-mono text-[10px] leading-relaxed text-zinc-600">…plus 25 more domains including Banking & Credit Risk, Consulting & Strategy, Higher Education & Research, Journalism & Publishing, Legal Tech & eDiscovery, Maritime, Rail, Telecommunications, and Urban Planning.</p>
+        <p className="max-w-4xl font-mono text-[10px] leading-relaxed text-zinc-600">…plus 22 more domains including Banking & Credit Risk, Consulting & Strategy, Higher Education & Research, Journalism & Publishing, Legal Tech & eDiscovery, Telecommunications, and Urban Planning.</p>
       </div>
     </section>
   );
@@ -429,8 +516,8 @@ function Download() {
     <section id="download" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-5xl px-5 text-center sm:px-8">
         <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">Get started</div>
-        <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Connect your workspace today.</h2>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">Download free and run locally in minutes. Your files, keys, and models stay on your machine — with 15 free runs included and zero monthly subscription lock-in.</p>
+        <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Keep your IP internal.<br />Start in minutes.</h2>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">Free to download and run locally. Your keys, models, and files stay on your hardware.</p>
         <div className="mt-12 grid gap-3 sm:grid-cols-2">
           {DOWNLOADS.map((d) => {
             const Icon = d.icon;
@@ -452,11 +539,11 @@ function Download() {
         <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4 text-sm text-zinc-300">
           <Smartphone className="h-4 w-4 text-zinc-400" strokeWidth={1.6} />
           <span className="font-display font-medium">Clasp Mobile</span>
-          <span className="text-zinc-600">— iOS &amp; Android remote companion</span>
+          <span className="text-zinc-600">— iOS &amp; Android companion</span>
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[10px] text-zinc-600">
-          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-zinc-500" /> 15 free runs included</span>
-          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-zinc-500" /> No credit card</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-zinc-500" /> Free to start</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-zinc-500" /> No cloud lock-in</span>
           <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-zinc-500" /> Keys stay on your machine</span>
         </div>
       </div>
@@ -471,6 +558,7 @@ function Footer() {
         <div className="flex items-center gap-3"><Logo size={24} /><span className="font-display text-sm font-semibold">ClaspOS</span><span className="font-mono text-[10px] text-zinc-600">© 2026</span></div>
         <div className="flex items-center gap-6 font-mono text-[10px] text-zinc-600">
           <a href="#platform" className="hover:text-zinc-300">Platform</a>
+          <a href="#industries" className="hover:text-zinc-300">Industry Atlas</a>
           <a href="#download" className="hover:text-zinc-300">Download</a>
           <a href="https://github.com/GlimmaryKarlR/ClaspOs-Releases" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-zinc-300">Releases <ArrowUpRight className="h-3 w-3" /></a>
         </div>
