@@ -67,8 +67,8 @@ const ATLAS_SECTORS = [
 
 const SEG_PER_SECTOR = 8;
 const SEG_COUNT = ATLAS_SECTORS.length * SEG_PER_SECTOR;
-const CCX = 240;
-const CCY = 240;
+const CCX = 260;
+const CCY = 260;
 const R_OUT = 148;
 const R_IN = 136;
 const R_ATTACH = 134;
@@ -143,7 +143,7 @@ const SECTOR_LABELS = ATLAS_SECTORS.map((sector, idx) => {
 function ChordAtlas() {
   return (
     <div className="w-full select-none">
-      <svg viewBox="0 0 480 480" className="mx-auto w-full max-w-[380px]" fill="none" aria-label="Circular chord diagram of 67 industries mapped in the Clasp Atlas">
+      <svg viewBox="0 0 520 520" className="mx-auto w-full" fill="none" aria-label="Circular chord diagram of 67 industries mapped in the Clasp Atlas">
         {/* faint guide rings */}
         <circle cx={CCX} cy={CCY} r={R_OUT + 10} stroke="white" strokeOpacity="0.045" strokeWidth="1" vectorEffect="non-scaling-stroke" />
         <circle cx={CCX} cy={CCY} r={R_IN - 12} stroke="white" strokeOpacity="0.035" strokeWidth="1" strokeDasharray="2 6" vectorEffect="non-scaling-stroke" />
@@ -180,7 +180,7 @@ function ChordAtlas() {
         </g>
 
         {/* sector labels */}
-        <g fontFamily="var(--font-mono)" fontSize="8.5" letterSpacing="0.5">
+        <g fontFamily="var(--font-mono)" fontSize="10" letterSpacing="0.5">
           {SECTOR_LABELS.map((s) => (
             <text key={s.name} x={s.x} y={s.y} textAnchor={s.anchor} fill={s.color} fillOpacity="0.9">
               {s.name}
@@ -244,7 +244,7 @@ function Hero() {
   return (
     <section id="top" className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
       <div className="pointer-events-none absolute inset-0 grid-overlay" />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2">
         <div>
           <div className="mb-6 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
             <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" /> Now shipping · v0.6.8
