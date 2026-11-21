@@ -69,8 +69,8 @@ const ATLAS_SECTORS = [
 
 const SEG_PER_SECTOR = 8;
 const SEG_COUNT = ATLAS_SECTORS.length * SEG_PER_SECTOR;
-const CCX = 260;
-const CCY = 260;
+const CCX = 270;
+const CCY = 270;
 const R_OUT = 148;
 const R_IN = 136;
 const R_ATTACH = 134;
@@ -137,14 +137,14 @@ const SECTOR_TICKS = ATLAS_SECTORS.map((_, s) => {
 
 const SECTOR_LABELS = ATLAS_SECTORS.map((sector, idx) => {
   const a = segAngle(idx * SEG_PER_SECTOR + (SEG_PER_SECTOR - 1) / 2);
-  const p = polar(R_OUT + 16, a);
-  return { ...sector, x: p.x, y: p.y, rotation: (a * 180) / Math.PI };
+  const p = polar(R_OUT + 4, a);
+  return { ...sector, x: p.x, y: p.y, rotation: (a * 180) / Math.PI - 90 };
 });
 
 function ChordAtlas() {
   return (
     <div className="w-full select-none">
-      <svg viewBox="0 0 520 520" className="mx-auto w-full" fill="none" aria-label="Circular chord diagram of 69 industries mapped in the Clasp Atlas">
+      <svg viewBox="0 0 540 540" className="mx-auto w-full" fill="none" aria-label="Circular chord diagram of 69 industries mapped in the Clasp Atlas">
         <g className="atlas-rotor">
           {/* faint guide rings */}
           <circle cx={CCX} cy={CCY} r={R_OUT + 10} stroke="white" strokeOpacity="0.045" strokeWidth="1" vectorEffect="non-scaling-stroke" />
@@ -181,14 +181,14 @@ function ChordAtlas() {
             {SECTOR_TICKS.map((d, i) => <path key={i} d={d} />)}
           </g>
 
-          {/* sector labels — oriented along their arc, rotating with the ring */}
-          <g fontFamily="var(--font-mono)" fontSize="10" letterSpacing="0.5">
+          {/* sector labels — spokes projecting out from their segment */}
+          <g fontFamily="var(--font-mono)" fontSize="10" letterSpacing="0.25">
             {SECTOR_LABELS.map((s) => (
               <text
                 key={s.name}
                 x={s.x}
                 y={s.y}
-                textAnchor="middle"
+                textAnchor="start"
                 dominantBaseline="central"
                 transform={`rotate(${s.rotation} ${s.x} ${s.y})`}
                 fill={s.color}
