@@ -10,16 +10,17 @@ import {
 /* Shared bits                                                         */
 /* ------------------------------------------------------------------ */
 
+const ATLAS_URL = 'https://ai.studio/apps/a8b8518d-7767-45da-8635-02d61f58923a';
+const RELEASES_PAGE = 'https://github.com/GlimmaryKarlR/ClaspOs-Releases/releases/tag/v0.6.7';
+
 const NAV = [
   { label: 'Platform', href: '#platform' },
   { label: 'How it works', href: '#how' },
   { label: 'Use cases', href: '#use-cases' },
   { label: 'Industry Atlas', href: '#industries' },
-  { label: 'Releases', href: 'https://github.com/GlimmaryKarlR/ClaspOs-Releases' },
+  { label: 'Releases', href: RELEASES_PAGE },
   { label: 'Download', href: '#download' },
 ];
-
-const ATLAS_URL = 'https://ai.studio/apps/a8b8518d-7767-45da-8635-02d61f58923a';
 
 const STATS = [
   { value: '67', label: 'Industries mapped', note: 'Domain rules, standards, and workflows preloaded.' },
@@ -144,53 +145,55 @@ function ChordAtlas() {
   return (
     <div className="w-full select-none">
       <svg viewBox="0 0 520 520" className="mx-auto w-full" fill="none" aria-label="Circular chord diagram of 67 industries mapped in the Clasp Atlas">
-        {/* faint guide rings */}
-        <circle cx={CCX} cy={CCY} r={R_OUT + 10} stroke="white" strokeOpacity="0.045" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        <circle cx={CCX} cy={CCY} r={R_IN - 12} stroke="white" strokeOpacity="0.035" strokeWidth="1" strokeDasharray="2 6" vectorEffect="non-scaling-stroke" />
+        <g className="atlas-rotor">
+          {/* faint guide rings */}
+          <circle cx={CCX} cy={CCY} r={R_OUT + 10} stroke="white" strokeOpacity="0.045" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <circle cx={CCX} cy={CCY} r={R_IN - 12} stroke="white" strokeOpacity="0.035" strokeWidth="1" strokeDasharray="2 6" vectorEffect="non-scaling-stroke" />
 
-        {/* chords */}
-        <g>
-          {CHORDS.map((c, i) => (
-            <path
-              key={i}
-              d={chordPath(c.i, c.j)}
-              stroke={c.color}
-              strokeOpacity={c.opacity}
-              strokeWidth={c.width}
-              vectorEffect="non-scaling-stroke"
-            />
-          ))}
+          {/* chords */}
+          <g>
+            {CHORDS.map((c, i) => (
+              <path
+                key={i}
+                d={chordPath(c.i, c.j)}
+                stroke={c.color}
+                strokeOpacity={c.opacity}
+                strokeWidth={c.width}
+                vectorEffect="non-scaling-stroke"
+              />
+            ))}
+          </g>
+
+          {/* industry ring segments */}
+          <g>
+            {Array.from({ length: SEG_COUNT }, (_, i) => (
+              <path
+                key={i}
+                d={ringSlice(i)}
+                fill={ATLAS_SECTORS[Math.floor(i / SEG_PER_SECTOR)].color}
+                fillOpacity={i % 3 === 0 ? 0.92 : 0.7}
+              />
+            ))}
+          </g>
+
+          {/* sector boundary ticks */}
+          <g stroke="white" strokeOpacity="0.22" strokeWidth="1" vectorEffect="non-scaling-stroke">
+            {SECTOR_TICKS.map((d, i) => <path key={i} d={d} />)}
+          </g>
+
+          {/* sector labels — counter-rotated so they stay upright */}
+          <g fontFamily="var(--font-mono)" fontSize="10" letterSpacing="0.5">
+            {SECTOR_LABELS.map((s) => (
+              <text key={s.name} className="atlas-counter" x={s.x} y={s.y} textAnchor={s.anchor} fill={s.color} fillOpacity="0.9">
+                {s.name}
+              </text>
+            ))}
+          </g>
+
+          {/* centre hub */}
+          <circle cx={CCX} cy={CCY} r="31" fill="#050506" stroke="white" strokeOpacity="0.14" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <circle cx={CCX} cy={CCY} r="36" stroke="white" strokeOpacity="0.05" strokeWidth="1" vectorEffect="non-scaling-stroke" />
         </g>
-
-        {/* industry ring segments */}
-        <g>
-          {Array.from({ length: SEG_COUNT }, (_, i) => (
-            <path
-              key={i}
-              d={ringSlice(i)}
-              fill={ATLAS_SECTORS[Math.floor(i / SEG_PER_SECTOR)].color}
-              fillOpacity={i % 3 === 0 ? 0.92 : 0.7}
-            />
-          ))}
-        </g>
-
-        {/* sector boundary ticks */}
-        <g stroke="white" strokeOpacity="0.22" strokeWidth="1" vectorEffect="non-scaling-stroke">
-          {SECTOR_TICKS.map((d, i) => <path key={i} d={d} />)}
-        </g>
-
-        {/* sector labels */}
-        <g fontFamily="var(--font-mono)" fontSize="10" letterSpacing="0.5">
-          {SECTOR_LABELS.map((s) => (
-            <text key={s.name} x={s.x} y={s.y} textAnchor={s.anchor} fill={s.color} fillOpacity="0.9">
-              {s.name}
-            </text>
-          ))}
-        </g>
-
-        {/* centre hub */}
-        <circle cx={CCX} cy={CCY} r="31" fill="#050506" stroke="white" strokeOpacity="0.14" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        <circle cx={CCX} cy={CCY} r="36" stroke="white" strokeOpacity="0.05" strokeWidth="1" vectorEffect="non-scaling-stroke" />
       </svg>
     </div>
   );
@@ -217,7 +220,7 @@ function Nav() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <a href="https://github.com/GlimmaryKarlR/ClaspOs-Releases" target="_blank" rel="noreferrer"
+          <a href={RELEASES_PAGE} target="_blank" rel="noreferrer"
              className="hidden items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 transition-colors hover:border-white/25 hover:text-white sm:inline-flex">
             <Github className="h-3.5 w-3.5" /> Releases
           </a>
@@ -483,12 +486,13 @@ function Industries() {
   );
 }
 
-const RELEASES = 'https://github.com/GlimmaryKarlR/ClaspOs-Releases/releases/latest/download';
+const RELEASES = 'https://github.com/GlimmaryKarlR/ClaspOs-Releases/releases/download/v0.6.7';
+const MOBILE_APK = 'https://github.com/GlimmaryKarlR/ClaspOsMobile-Releases/releases/download/v0.1.3/ClaspMobile-0.1.3-android.apk';
 const DOWNLOADS = [
-  { label: 'macOS · Apple Silicon', file: `${RELEASES}/ClaspOs-0.6.8-mac-applesilicon.dmg`, icon: Command, note: 'M1 / M2 / M3 / M4' },
-  { label: 'macOS · Intel', file: `${RELEASES}/ClaspOs-0.6.8-mac-intel.dmg`, icon: Monitor, note: 'x86_64' },
-  { label: 'Windows', file: `${RELEASES}/ClaspOs-0.6.8-windows.exe`, icon: AppWindow, note: '64-bit installer' },
-  { label: 'Linux', file: `${RELEASES}/ClaspOs-0.6.8-linux.AppImage`, icon: TerminalSquare, note: 'Universal AppImage' },
+  { label: 'macOS · Apple Silicon', file: `${RELEASES}/ClaspOs-0.6.7-mac-applesilicon.dmg`, icon: Command, note: 'M1 / M2 / M3 / M4' },
+  { label: 'macOS · Intel', file: `${RELEASES}/ClaspOs-0.6.7-mac-intel.dmg`, icon: Monitor, note: 'x86_64' },
+  { label: 'Windows', file: `${RELEASES}/ClaspOs-0.6.7-windows.exe`, icon: AppWindow, note: '64-bit installer' },
+  { label: 'Linux', file: `${RELEASES}/ClaspOs-0.6.7-linux.AppImage`, icon: TerminalSquare, note: 'Universal AppImage' },
 ];
 
 function Download() {
@@ -502,7 +506,7 @@ function Download() {
           {DOWNLOADS.map((d) => {
             const Icon = d.icon;
             return (
-              <a key={d.file} href={d.file}
+              <a key={d.file} href={d.file} download
                  className="group flex items-center justify-between gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 text-left transition-all hover:border-white/25 hover:bg-white/[0.05]">
                 <div className="flex items-center gap-4">
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-neutral-950"><Icon className="h-4 w-4 text-zinc-300" strokeWidth={1.6} /></span>
@@ -516,11 +520,12 @@ function Download() {
             );
           })}
         </div>
-        <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4 text-sm text-zinc-300">
+        <a href={MOBILE_APK} download className="group mt-4 flex items-center justify-center gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4 text-sm text-zinc-300 transition-all hover:border-white/25 hover:bg-white/[0.04]">
           <Smartphone className="h-4 w-4 text-zinc-400" strokeWidth={1.6} />
           <span className="font-display font-medium">Clasp Mobile</span>
           <span className="text-zinc-600">— iOS &amp; Android companion</span>
-        </div>
+          <DownloadIcon className="h-3.5 w-3.5 text-zinc-600 transition-colors group-hover:text-zinc-200" />
+        </a>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-[10px] text-zinc-600">
           <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-zinc-500" /> Free to start</span>
           <span className="inline-flex items-center gap-1.5"><Check className="h-3 w-3 text-zinc-500" /> No cloud lock-in</span>
@@ -540,7 +545,7 @@ function Footer() {
           <a href="#platform" className="hover:text-zinc-300">Platform</a>
           <a href="#industries" className="hover:text-zinc-300">Industry Atlas</a>
           <a href="#download" className="hover:text-zinc-300">Download</a>
-          <a href="https://github.com/GlimmaryKarlR/ClaspOs-Releases" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-zinc-300">Releases <ArrowUpRight className="h-3 w-3" /></a>
+          <a href={RELEASES_PAGE} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-zinc-300">Releases <ArrowUpRight className="h-3 w-3" /></a>
         </div>
       </div>
     </footer>
