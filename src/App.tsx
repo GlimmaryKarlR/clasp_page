@@ -10,7 +10,7 @@ import {
 /* Shared bits                                                         */
 /* ------------------------------------------------------------------ */
 
-const ATLAS_URL = 'https://ai.studio/apps/a8b8518d-7767-45da-8635-02d61f58923a';
+const ATLAS_URL = 'https://claspatlas.vercel.app/';
 const RELEASES_PAGE = 'https://github.com/GlimmaryKarlR/ClaspOs-Releases/releases/tag/v0.6.7';
 
 const NAV = [
