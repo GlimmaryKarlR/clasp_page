@@ -137,9 +137,8 @@ const SECTOR_TICKS = ATLAS_SECTORS.map((_, s) => {
 
 const SECTOR_LABELS = ATLAS_SECTORS.map((sector, idx) => {
   const a = segAngle(idx * SEG_PER_SECTOR + (SEG_PER_SECTOR - 1) / 2);
-  const p = polar(R_OUT + 14, a);
-  const anchor = p.x > CCX + 8 ? 'start' : p.x < CCX - 8 ? 'end' : 'middle';
-  return { ...sector, x: p.x, y: p.y + 3, anchor: anchor as 'start' | 'end' | 'middle' };
+  const p = polar(R_OUT + 16, a);
+  return { ...sector, x: p.x, y: p.y, rotation: (a * 180) / Math.PI };
 });
 
 function ChordAtlas() {
@@ -182,10 +181,19 @@ function ChordAtlas() {
             {SECTOR_TICKS.map((d, i) => <path key={i} d={d} />)}
           </g>
 
-          {/* sector labels — counter-rotated so they stay upright */}
+          {/* sector labels — oriented along their arc, rotating with the ring */}
           <g fontFamily="var(--font-mono)" fontSize="10" letterSpacing="0.5">
             {SECTOR_LABELS.map((s) => (
-              <text key={s.name} className="atlas-counter" x={s.x} y={s.y} textAnchor={s.anchor} fill={s.color} fillOpacity="0.9">
+              <text
+                key={s.name}
+                x={s.x}
+                y={s.y}
+                textAnchor="middle"
+                dominantBaseline="central"
+                transform={`rotate(${s.rotation} ${s.x} ${s.y})`}
+                fill={s.color}
+                fillOpacity="0.9"
+              >
                 {s.name}
               </text>
             ))}
