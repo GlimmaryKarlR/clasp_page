@@ -261,7 +261,7 @@ function Hero() {
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2">
         <div>
           <h1 className="font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-[66px]">
-            AI does the busy work.<br /><span className="text-zinc-400">You think.</span>
+            Ai does the busy work,<br /><span className="text-zinc-400">So you can think.</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
             Control your software, shop hardware, or office network from your local workspace.
