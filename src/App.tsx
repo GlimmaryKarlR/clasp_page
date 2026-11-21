@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Cpu, Download as DownloadIcon, ArrowRight, ArrowUpRight, Github, Menu, X, Check,
   Monitor, Command, AppWindow, CircleDot, Radar, HeartPulse, TerminalSquare,
-  Scale, Plane, Braces, Database, ShieldCheck, Smartphone, ChevronRight,
+  Scale, Plane, Braces, Database, ShieldCheck, Smartphone,
   Layers3, Sparkles, Cog, PenTool,
 } from 'lucide-react';
 
@@ -221,8 +221,10 @@ function Nav() {
              className="hidden items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 transition-colors hover:border-white/25 hover:text-white sm:inline-flex">
             <Github className="h-3.5 w-3.5" /> Releases
           </a>
-          <a href="#download" className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3.5 py-2 text-xs font-semibold text-neutral-950 transition-colors hover:bg-zinc-200">
-            Download <DownloadIcon className="h-3.5 w-3.5" />
+          <a href="#download" className="group inline-flex rounded-[10px] bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 p-[2px] shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110">
+            <span className="inline-flex items-center gap-1.5 rounded-[8px] bg-neutral-950 px-3 py-[7px] text-xs font-semibold text-white transition-colors group-hover:bg-neutral-800">
+              Download <DownloadIcon className="h-3.5 w-3.5" />
+            </span>
           </a>
           <button type="button" className="text-zinc-400 lg:hidden" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -246,23 +248,18 @@ function Hero() {
       <div className="pointer-events-none absolute inset-0 grid-overlay" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2">
         <div>
-          <div className="mb-6 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
-            <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" /> Now shipping · v0.6.8
-          </div>
           <h1 className="font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-[66px]">
-            AI should do the busy work.<br /><span className="text-zinc-400">You should think.</span>
+            AI does the busy work.<br /><span className="text-zinc-400">You think.</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-            Control your desktop software, shop floor, lab, or office network from one local-first
-            workspace—and run it all from your phone without ever leaking proprietary data to
-            frontier labs.
+            Control your software, shop hardware, or office network from your local workspace.
+            Run it all from your phone, without leaking proprietary data to frontier labs.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
-            <a href="#download" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-neutral-950 transition-colors hover:bg-zinc-200">
-              Download ClaspOS <ArrowRight className="h-4 w-4" />
-            </a>
-            <a href="#industries" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-3 text-sm text-zinc-300 transition-colors hover:border-white/25 hover:text-white">
-              Explore the Atlas <ChevronRight className="h-4 w-4" />
+            <a href="#download" className="group inline-flex rounded-xl bg-gradient-to-r from-blue-500 via-teal-400 to-emerald-400 p-[2.5px] shadow-md transition-all duration-200 hover:shadow-lg hover:brightness-110">
+              <span className="inline-flex items-center gap-2 rounded-[10px] bg-neutral-950 px-5 py-3 text-sm font-semibold text-white transition-colors group-hover:bg-neutral-800">
+                Download ClaspOS <ArrowRight className="h-4 w-4" />
+              </span>
             </a>
           </div>
           <p className="mt-6 font-mono text-[10px] text-zinc-600">macOS · Windows · Linux · Clasp Mobile · Free to start</p>
@@ -362,10 +359,8 @@ function Platform() {
           One mind across your software,<br />hardware, and phone.
         </h2>
         <p className="mt-5 text-base leading-relaxed text-zinc-400">
-          In Asimov’s Foundation, the clasp was the state of two or more robots sharing one mind.
-          ClaspOS brings that to your workstation—gathering your existing software, local Wi-Fi
-          hardware, and AI models into one place so you never waste time copy-pasting or letting
-          AI dictate how you work.
+          ClaspOS gathers your existing software, local Wi-Fi hardware, and AI models into one
+          place so you never waste time copy-pasting or letting AI dictate how you work.
         </p>
       </div>
       <div className="mt-14 grid gap-4 md:grid-cols-3">
@@ -483,9 +478,6 @@ function Industries() {
             <span key={`${name}-${i}`} className="whitespace-nowrap rounded-full border border-white/[0.07] bg-white/[0.02] px-4 py-2 text-xs text-zinc-400">{name}</span>
           ))}
         </div>
-      </div>
-      <div className="mx-auto mt-10 max-w-7xl px-5 sm:px-8">
-        <p className="max-w-4xl font-mono text-[10px] leading-relaxed text-zinc-600">…plus 22 more domains including Banking & Credit Risk, Consulting & Strategy, Higher Education & Research, Journalism & Publishing, Legal Tech & eDiscovery, Telecommunications, and Urban Planning.</p>
       </div>
     </section>
   );
