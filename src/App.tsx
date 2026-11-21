@@ -142,13 +142,8 @@ const SECTOR_LABELS = ATLAS_SECTORS.map((sector, idx) => {
 
 function ChordAtlas() {
   return (
-    <div className="w-full select-none rounded-2xl border border-white/[0.08] bg-[#09090b] p-5 sm:p-6">
-      <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-        <span>The Industry Atlas</span>
-        <span className="text-zinc-400">67 domains · 1,340+ clasps</span>
-      </div>
-
-      <svg viewBox="0 0 480 480" className="mx-auto my-3 w-full max-w-[380px]" fill="none" aria-label="Circular chord diagram of 67 industries mapped in the Clasp Atlas">
+    <div className="w-full select-none">
+      <svg viewBox="0 0 480 480" className="mx-auto w-full max-w-[380px]" fill="none" aria-label="Circular chord diagram of 67 industries mapped in the Clasp Atlas">
         {/* faint guide rings */}
         <circle cx={CCX} cy={CCY} r={R_OUT + 10} stroke="white" strokeOpacity="0.045" strokeWidth="1" vectorEffect="non-scaling-stroke" />
         <circle cx={CCX} cy={CCY} r={R_IN - 12} stroke="white" strokeOpacity="0.035" strokeWidth="1" strokeDasharray="2 6" vectorEffect="non-scaling-stroke" />
@@ -194,16 +189,9 @@ function ChordAtlas() {
         </g>
 
         {/* centre hub */}
-        <circle cx={CCX} cy={CCY} r="31" fill="#09090b" stroke="white" strokeOpacity="0.14" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <circle cx={CCX} cy={CCY} r="31" fill="#050506" stroke="white" strokeOpacity="0.14" strokeWidth="1" vectorEffect="non-scaling-stroke" />
         <circle cx={CCX} cy={CCY} r="36" stroke="white" strokeOpacity="0.05" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        <text x={CCX} y={CCY + 3} textAnchor="middle" fill="#f4f4f5" fontSize="20" fontWeight="600" fontFamily="var(--font-display)">67</text>
-        <text x={CCX} y={CCY + 17} textAnchor="middle" fill="#71717a" fontSize="7" letterSpacing="1.4" fontFamily="var(--font-mono)">INDUSTRIES</text>
       </svg>
-
-      <div className="flex items-center justify-between border-t border-white/[0.06] pt-3 font-mono text-[10px] text-zinc-500">
-        <span>Circos map · Local-first</span>
-        <span>One mind, 67 domains</span>
-      </div>
     </div>
   );
 }
