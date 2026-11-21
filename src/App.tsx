@@ -54,17 +54,17 @@ function Logo({ size = 28 }: { size?: number }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Hero graphic — compact, static circular chord diagram               */
+/* Hero graphic — compact circular chord diagram with light hover data */
 /* ------------------------------------------------------------------ */
 
 const ATLAS_SECTORS = [
-  { name: 'Legal & Gov', color: '#A78BFA' },
-  { name: 'Design & Media', color: '#FBBF24' },
-  { name: 'Engineering', color: '#F87171' },
-  { name: 'Data & DevOps', color: '#60A5FA' },
-  { name: 'Health & Biotech', color: '#2DD4BF' },
-  { name: 'Finance & Ops', color: '#34D399' },
-  { name: 'Energy & Robotics', color: '#CBD5E1' },
+  { name: 'Legal & Gov', color: '#A78BFA', industries: 10 },
+  { name: 'Design & Media', color: '#FBBF24', industries: 9 },
+  { name: 'Engineering', color: '#F87171', industries: 10 },
+  { name: 'Data & DevOps', color: '#60A5FA', industries: 10 },
+  { name: 'Health & Biotech', color: '#2DD4BF', industries: 10 },
+  { name: 'Finance & Ops', color: '#34D399', industries: 10 },
+  { name: 'Energy & Robotics', color: '#CBD5E1', industries: 10 },
 ];
 
 const SEG_PER_SECTOR = 8;
@@ -142,6 +142,7 @@ const SECTOR_LABELS = ATLAS_SECTORS.map((sector, idx) => {
 });
 
 function ChordAtlas() {
+  const [hovered, setHovered] = useState<number | null>(null);
   return (
     <div className="w-full select-none">
       <svg viewBox="0 0 540 540" className="mx-auto w-full" fill="none" aria-label="Circular chord diagram of 69 industries mapped in the Clasp Atlas">
@@ -166,14 +167,21 @@ function ChordAtlas() {
 
           {/* industry ring segments */}
           <g>
-            {Array.from({ length: SEG_COUNT }, (_, i) => (
-              <path
-                key={i}
-                d={ringSlice(i)}
-                fill={ATLAS_SECTORS[Math.floor(i / SEG_PER_SECTOR)].color}
-                fillOpacity={i % 3 === 0 ? 0.92 : 0.7}
-              />
-            ))}
+            {Array.from({ length: SEG_COUNT }, (_, i) => {
+              const sector = Math.floor(i / SEG_PER_SECTOR);
+              const active = hovered === sector;
+              return (
+                <path
+                  key={i}
+                  d={ringSlice(i)}
+                  fill={ATLAS_SECTORS[sector].color}
+                  fillOpacity={hovered === null ? (i % 3 === 0 ? 0.92 : 0.7) : active ? 1 : 0.2}
+                  className="cursor-help transition-opacity duration-150"
+                  onMouseEnter={() => setHovered(sector)}
+                  onMouseLeave={() => setHovered(null)}
+                />
+              );
+            })}
           </g>
 
           {/* sector boundary ticks */}
@@ -183,7 +191,7 @@ function ChordAtlas() {
 
           {/* sector labels — spokes projecting out from their segment */}
           <g fontFamily="var(--font-mono)" fontSize="10" letterSpacing="0.25">
-            {SECTOR_LABELS.map((s) => (
+            {SECTOR_LABELS.map((s, idx) => (
               <text
                 key={s.name}
                 x={s.x}
@@ -192,7 +200,10 @@ function ChordAtlas() {
                 dominantBaseline="central"
                 transform={`rotate(${s.rotation} ${s.x} ${s.y})`}
                 fill={s.color}
-                fillOpacity="0.9"
+                fillOpacity={hovered === null || hovered === idx ? 0.95 : 0.35}
+                className="cursor-help transition-opacity duration-150"
+                onMouseEnter={() => setHovered(idx)}
+                onMouseLeave={() => setHovered(null)}
               >
                 {s.name}
               </text>
@@ -204,6 +215,18 @@ function ChordAtlas() {
           <circle cx={CCX} cy={CCY} r="36" stroke="white" strokeOpacity="0.05" strokeWidth="1" vectorEffect="non-scaling-stroke" />
         </g>
       </svg>
+      <div className="flex h-6 items-start justify-center">
+        {hovered !== null && (
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0b0b0e]/95 px-3 py-1.5 font-mono text-[10px] shadow-lg backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: ATLAS_SECTORS[hovered].color }} />
+            <span className="text-zinc-200">{ATLAS_SECTORS[hovered].name}</span>
+            <span className="text-zinc-600">·</span>
+            <span className="text-zinc-400">{ATLAS_SECTORS[hovered].industries} industries</span>
+            <span className="text-zinc-600">·</span>
+            <span className="text-zinc-400">{ATLAS_SECTORS[hovered].industries * 20} clasps</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
