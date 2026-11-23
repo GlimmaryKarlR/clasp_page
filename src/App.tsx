@@ -23,8 +23,8 @@ const NAV = [
 ];
 
 const STATS = [
-  { value: '72', label: 'Industries mapped', note: 'Domain rules, standards, and workflows preloaded.' },
-  { value: '1,440+', label: 'Clasped devices & apps', note: 'Software hooks and local hardware protocols.' },
+  { value: '77', label: 'Industries mapped', note: 'Domain rules, standards, and workflows preloaded.' },
+  { value: '1,540+', label: 'Clasped devices & apps', note: 'Software hooks and local hardware protocols.' },
   { value: '42', label: 'Baseline hubs', note: 'Ready-to-run industry starter stacks.' },
   { value: '10+', label: 'Model providers', note: 'Local open models or Bring Your Own Cloud.' },
 ];
@@ -40,6 +40,7 @@ const INDUSTRIES = [
   'Music Production', 'Advertising', 'Non-Profit', 'Humanoid Systems', 'Space & Satellite',
   'AI Assistants', 'Wearables', 'XR / Spatial', 'Maritime', 'Rail', 'Smart Buildings',
   'Negotiations', 'Scam Detection', 'Procurement', 'Enterprise HCM', 'Customer Experience',
+  'Payer Operations', 'Healthcare AI', 'Transformation', 'Global Finance Ops', 'Enterprise Governance',
 ];
 
 function Logo({ size = 28 }: { size?: number }) {
@@ -145,7 +146,7 @@ function ChordAtlas() {
   const [hovered, setHovered] = useState<number | null>(null);
   return (
     <div className="w-full select-none">
-      <svg viewBox="0 0 540 540" className="mx-auto w-full" fill="none" aria-label="Circular chord diagram of 72 industries mapped in the Clasp Atlas">
+      <svg viewBox="0 0 540 540" className="mx-auto w-full" fill="none" aria-label="Circular chord diagram of 77 industries mapped in the Clasp Atlas">
         <g className="atlas-rotor">
           {/* faint guide rings */}
           <circle cx={CCX} cy={CCY} r={R_OUT + 10} stroke="white" strokeOpacity="0.045" strokeWidth="1" vectorEffect="non-scaling-stroke" />
@@ -496,12 +497,12 @@ function Industries() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">The Industry Atlas</div>
-            <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">72 industries,<br />mapped in one Atlas.</h2>
+            <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">77 industries,<br />mapped in one Atlas.</h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">
               Never retrain a team from scratch on new software or hardware. Every industry stack ships
               with preloaded domain intelligence, protocols, and tool hooks out of the box.{' '}
               <a href={ATLAS_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-zinc-200 underline decoration-zinc-600 underline-offset-2 transition-colors hover:text-white">
-                Browse the full 72-industry Atlas <ArrowUpRight className="h-3.5 w-3.5" />
+                Browse the full 77-industry Atlas <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
             </p>
           </div>
