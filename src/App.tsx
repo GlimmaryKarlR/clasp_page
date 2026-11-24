@@ -11,7 +11,7 @@ import {
 /* ------------------------------------------------------------------ */
 
 const ATLAS_URL = 'https://claspatlas.vercel.app/';
-const RELEASES_PAGE = 'https://github.com/GlimmaryKarlR/ClaspOs-Releases/releases/tag/v0.7.0';
+const RELEASES_PAGE = 'https://github.com/GlimmaryKarlR/ClaspOs-Releases/releases/tag/v0.7.1';
 
 const NAV = [
   { label: 'Platform', href: '#platform' },
@@ -244,7 +244,7 @@ function Nav() {
         <a href="#top" className="flex items-center gap-3">
           <Logo size={30} />
           <span className="font-display text-base font-semibold tracking-tight">ClaspOS</span>
-          <span className="hidden font-mono text-[10px] text-zinc-500 sm:inline">v0.7.0</span>
+          <span className="hidden font-mono text-[10px] text-zinc-500 sm:inline">v0.7.1</span>
         </a>
         <nav className="hidden items-center gap-6 lg:flex">
           {NAV.filter((n) => n.label !== 'Download').map((n) => (
@@ -519,13 +519,13 @@ function Industries() {
   );
 }
 
-const RELEASES = 'https://github.com/GlimmaryKarlR/ClaspOs-Releases/releases/download/v0.7.0';
+const RELEASES = 'https://github.com/GlimmaryKarlR/ClaspOs-Releases/releases/download/v0.7.1';
 const MOBILE_APK = 'https://github.com/GlimmaryKarlR/ClaspOsMobile-Releases/releases/download/v0.1.3/ClaspMobile-0.1.3-android.apk';
 const DOWNLOADS = [
-  { label: 'macOS · Apple Silicon', file: `${RELEASES}/ClaspOs-0.7.0-mac-applesilicon.dmg`, icon: Command, note: 'M1 / M2 / M3 / M4' },
-  { label: 'macOS · Intel', file: `${RELEASES}/ClaspOs-0.7.0-mac-intel.dmg`, icon: Monitor, note: 'x86_64' },
-  { label: 'Windows', file: `${RELEASES}/ClaspOs-0.7.0-windows.exe`, icon: AppWindow, note: '64-bit installer' },
-  { label: 'Linux', file: `${RELEASES}/ClaspOs-0.7.0-linux.AppImage`, icon: TerminalSquare, note: 'Universal AppImage' },
+  { label: 'macOS · Apple Silicon', file: `${RELEASES}/ClaspOs-0.7.1-mac-applesilicon.dmg`, icon: Command, note: 'M1 / M2 / M3 / M4' },
+  { label: 'macOS · Intel', file: `${RELEASES}/ClaspOs-0.7.1-mac-intel.dmg`, icon: Monitor, note: 'x86_64' },
+  { label: 'Windows', file: `${RELEASES}/ClaspOs-0.7.1-windows.exe`, icon: AppWindow, note: '64-bit installer' },
+  { label: 'Linux', file: `${RELEASES}/ClaspOs-0.7.1-linux.AppImage`, icon: TerminalSquare, note: 'Universal AppImage' },
 ];
 
 function Download() {
